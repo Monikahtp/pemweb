@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Movie Search</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <style>
+        body {
+            background: url('weh.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #fff;
+        }
+        .card {
+            background-color: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            transition: transform 0.2s;
+        }
+        .card:hover {
+            transform: scale(1.05);
+        }
+        .jumbotron {
+            background: rgba(0, 0, 0, 0.7);
+            padding: 2rem;
+            border-radius: 10px;
+        }
+        .jumbotron h1 {
+            font-size: 36px;
+        }
+        .form-control {
+            background: rgba(0, 0, 0, 0.5);
+            color: #fff;
+        }
+    </style>
+</head>
+<body>
+    <div class="container mt-4">
+        <h1 class="text-center">Movie Search</h1>
+        <div class="input-group mb-3">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search for a movie">
+            <div class="input-group-append">
+                <button id="searchButton" class="btn btn-primary" type="button">Search</button>
+            </div>
+        </div>
+        <div id="results" class="row">
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('searchButton').addEventListener('click', function () {
+            const searchInput = document.getElementById('searchInput').value;
+
+            fetch(`https://www.omdbapi.com/?s=${searchInput}&apikey=d9c11c2a&plot=full`)
+                .then(response => response.json())
+                .then(data => {
+                    const results = document.getElementById('results');
+                    results.innerHTML = '';
+
+                    if (data.Search) {
+                        data.Search.forEach(movie => {
+                            const movieCard = `
+                                <div class="col-md-4 mb-3">
+                                    <div class="card">
+                                        <img src="${movie.Poster}" class="card-img-top" alt="${movie.Title}">
+                                        <div class="card-body">
+                                            <h5 class="card-title">${movie.Title}</h5>
+                                            <p class="card-text">Year: ${movie.Year}</p>
+                                            <a href="https://www.imdb.com/title/${movie.imdbID}" class="btn btn-primary btn-block">IMDb</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            `;
+                            results.innerHTML += movieCard;
+                        });
+                    } else {
+                        results.innerHTML = '<p class="text-danger">No results found.</p>';
+                    }
+                })
+                .catch(error => console.error(error));
+        });
+    </script>
+</body>
+</html>
